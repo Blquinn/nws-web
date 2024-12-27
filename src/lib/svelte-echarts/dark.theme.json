@@ -2,7 +2,7 @@
     "version": 1,
     "themeName": "dark",
     "theme": {
-        "seriesCnt": "3",
+        "seriesCnt": "4",
         "backgroundColor": "#020817",
         "titleColor": "#f8fafc",
         "subtitleColor": "#dbe6f0",
@@ -22,8 +22,8 @@
             "#91ca8c",
             "#f49f42"
         ],
-        "borderColor": "#ccc",
-        "borderWidth": "0",
+        "borderColor": "#1e293b",
+        "borderWidth": 0,
         "visualMapColor": [
             "#bf444c",
             "#d88273",
@@ -36,8 +36,8 @@
         "kBorderColor0": "#0cf49b",
         "kBorderWidth": 1,
         "lineWidth": "4",
-        "symbolSize": "6",
-        "symbol": "emptyCircle",
+        "symbolSize": "10",
+        "symbol": "circle",
         "symbolBorderWidth": 1,
         "lineSmooth": false,
         "graphLineWidth": 1,
@@ -55,14 +55,14 @@
                 "type": "all",
                 "name": "通用坐标轴",
                 "axisLineShow": true,
-                "axisLineColor": "#f8fafc",
+                "axisLineColor": "#94a3b8",
                 "axisTickShow": true,
-                "axisTickColor": "#f8fafc",
+                "axisTickColor": "#94a3b8",
                 "axisLabelShow": true,
-                "axisLabelColor": "#f8fafc",
+                "axisLabelColor": "#94a3b8",
                 "splitLineShow": true,
                 "splitLineColor": [
-                    "#aaaaaa"
+                    "red"
                 ],
                 "splitAreaShow": false,
                 "splitAreaColor": [
@@ -147,8 +147,8 @@
             }
         ],
         "axisSeperateSetting": false,
-        "toolboxColor": "#999",
-        "toolboxEmphasisColor": "#94a3b8",
+        "toolboxColor": "#94a3b8",
+        "toolboxEmphasisColor": "#1e293b",
         "tooltipAxisColor": "#f8fafc",
         "tooltipAxisWidth": "1",
         "timelineLineColor": "#f8fafc",
