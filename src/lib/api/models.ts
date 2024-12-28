@@ -3,6 +3,7 @@ import moment from 'moment';
 import { z } from 'zod';
 import { transformPropertyList } from './utils';
 import { Coordinate } from './geography';
+import type { WmoUnitType } from './units';
 
 //////////////////////////////////////
 // Point
@@ -49,7 +50,7 @@ export type PropertyValue = z.infer<typeof PropertyValue>;
 
 export interface UnitOfMeasure {
 	namespace: string;
-	unitType: string;
+	unitType: WmoUnitType;
 }
 
 function parseUom(json?: string | null): UnitOfMeasure | undefined {
@@ -70,7 +71,7 @@ function parseUom(json?: string | null): UnitOfMeasure | undefined {
 	return {
 		namespace: namespace,
 		// unitType: unitTypeMap[unitNotation] ?? WmoUnitType.unknown,
-		unitType: unitNotation
+		unitType: unitNotation as WmoUnitType
 	};
 }
 
@@ -237,8 +238,8 @@ export const QuantitativeValue = z.object({
 });
 
 export const MetarPhenomenon = z.object({
-	intensity: z.string(),
-	modifier: z.string(),
+	intensity: z.string().nullable(),
+	modifier: z.string().nullable(),
 	weather: z.string(),
 	rawString: z.string()
 });

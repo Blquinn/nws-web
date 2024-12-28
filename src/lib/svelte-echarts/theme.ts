@@ -1,16 +1,6 @@
 import type { EChartsOption } from 'echarts';
 
-// import customDark from './dark.theme.json';
-
-// export const DARK_THEME = 'customDark';
-
-// export {
-//   customDark,
-// };
-
 // These need to be synced with css color vars from app.css
-
-
 export interface ThemeData {
   background: string
   foreground: string
