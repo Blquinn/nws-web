@@ -1,5 +1,6 @@
-import type { Duration, Moment } from 'moment';
-import moment from 'moment';
+import type { Dayjs } from 'dayjs';
+import type { Duration } from 'dayjs/plugin/duration';
+import moment from 'dayjs';
 import { z } from 'zod';
 import { transformPropertyList } from './utils';
 import { Coordinate } from './geography';
@@ -22,7 +23,7 @@ export type NwsPointResponse = z.infer<typeof NwsPointResponse>;
 // Gridpoint
 
 interface TimeRange {
-	startTime: Moment;
+	startTime: Dayjs;
 	duration: Duration;
 }
 

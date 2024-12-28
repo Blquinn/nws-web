@@ -1,6 +1,8 @@
-import moment from "moment";
+import moment from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import type { PropertyValue, UnitOfMeasure } from "./models";
 
+moment.extend(duration);
 
 interface pl {
   uom?: UnitOfMeasure,
@@ -19,7 +21,8 @@ export function transformPropertyList(propertyList?: pl): pl | undefined {
 
   // Find first value
   var valuesIdx = propertyList.values.findLastIndex((v) =>
-    currentHour.isSameOrAfter(v.validTime.startTime));
+    currentHour.isSame(v.validTime.startTime) ||
+    currentHour.isAfter(v.validTime.startTime));
 
   if (valuesIdx < 0) {
     valuesIdx = 0;

@@ -7,7 +7,7 @@ import {
 	ObservationStationCollectionResponse,
 	type WeatherData
 } from './models';
-import moment from 'moment';
+import moment from 'dayjs';
 
 const nwsBaseUrl = 'http://api.weather.gov';
 const requestTimeout = moment.duration({ minutes: 1 });
