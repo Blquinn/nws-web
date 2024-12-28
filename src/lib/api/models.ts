@@ -86,16 +86,6 @@ export const PropertyList = z
 export type PropertyList = z.infer<typeof PropertyList>;
 
 export const WeatherValue = z.object({
-	//  {
-	//                           "coverage": "chance",
-	//                           "weather": "thunderstorms",
-	//                           "intensity": null,
-	//                           "visibility": {
-	//                               "unitCode": "wmoUnit:km",
-	//                               "value": 8.0467200000000005
-	//                           },
-	//                           "attributes": []
-	//                       },
 	coverage: z.string().nullable(),
 	weather: z.string().nullable(),
 	// intensity: z.any(),
