@@ -5,7 +5,7 @@ import type { UnitOfMeasure } from './api/models';
 
 const feetInMile = 5280;
 
-type UnitSystem = 'metric' | 'imperial';
+export type UnitSystem = 'metric' | 'imperial';
 
 const wmoTypeToMathJs = {
   "Cel": "degC",

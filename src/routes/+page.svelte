@@ -22,7 +22,8 @@
 	import type { WeatherData } from '@/api/models';
 	import { onMount } from 'svelte';
 	import UnitSwitch from '@/components/ui/unit-switch.svelte';
-	import { convertToUnit, displayUnit } from '@/convert';
+	import { convertToUnit, displayUnit, type UnitSystem } from '@/convert';
+	import { unitSystemStore } from '@/state';
 
 	use([
 		TitleComponent,
@@ -43,7 +44,8 @@
 	
 	const weatherDataToOpt = (
 		data: resType,
-		theme: ThemeData
+		theme: ThemeData,
+		unitSystem: UnitSystem,
 	): EChartsOption | string | undefined => {
 		if (!data || typeof data == 'string') {
 			return data;
@@ -75,10 +77,10 @@
 			}
 		}
 		
-		const minUnit = displayUnit(convertToUnit(minVal!, temp.uom!), "imperial");
+		const minUnit = displayUnit(convertToUnit(minVal!, temp.uom!), unitSystem);
 		minVal = minUnit.value;
 		
-		const maxUnit = displayUnit(convertToUnit(maxVal!, temp.uom!), "imperial");
+		const maxUnit = displayUnit(convertToUnit(maxVal!, temp.uom!), unitSystem);
 		maxVal = maxUnit.value;
 
 		const startFactor = 5;
@@ -89,7 +91,7 @@
 		for (let i = 0; i < series.length; i++) {
 			const val = series[i];
 			const u = convertToUnit(val[1], temp.uom!);
-			const du = displayUnit(u, "imperial");
+			const du = displayUnit(u, unitSystem);
 			series[i][1] = du.value;
 		}
 
@@ -169,7 +171,7 @@
 	};
 
 	let option: EChartsOption | string | undefined = $derived(
-		weatherDataToOpt(weatherResponse, theme)
+		weatherDataToOpt(weatherResponse, theme, $unitSystemStore)
 	);
 
 	onMount(async () => {
