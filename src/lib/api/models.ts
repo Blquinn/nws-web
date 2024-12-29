@@ -55,7 +55,7 @@ export interface UnitOfMeasure {
 }
 
 function parseUom(json?: string | null): UnitOfMeasure | undefined {
-  if (!json) return undefined;
+	if (!json) return undefined;
 
 	const colIdx = json.indexOf(':');
 	if (colIdx == -1) {
@@ -87,7 +87,7 @@ export type PropertyList = z.infer<typeof PropertyList>;
 
 export const WeatherValue = z.object({
 	coverage: z.string().nullish(),
-	weather: z.string().nullish(),
+	weather: z.string().nullish()
 	// intensity: z.any(),
 	// visibility: z.any(),
 	// attributes: z.array(z.any())
@@ -160,14 +160,14 @@ const propertyKeys = [
 export const NwsGridpointResponseProperties = z.preprocess(
 	(rawProperties: unknown) => {
 		// const { weather, ...properties } = rawProperties as any;
-    const weather = (rawProperties as any).weather;
-    const props: Record<string, any> = {};
-    const propObj = rawProperties as Object;
-    for (let key of Object.keys(propObj)) {
-      if ((propertyKeys as unknown as string[]).includes(key)) {
-        props[key] = (propObj as any)[key];
-      }
-    }
+		const weather = (rawProperties as any).weather;
+		const props: Record<string, any> = {};
+		const propObj = rawProperties as Object;
+		for (let key of Object.keys(propObj)) {
+			if ((propertyKeys as unknown as string[]).includes(key)) {
+				props[key] = (propObj as any)[key];
+			}
+		}
 
 		return { weather, properties: props };
 	},
@@ -242,7 +242,7 @@ export type MetarPhenomenon = z.infer<typeof MetarPhenomenon>;
 export const Observation = z.object({
 	station: z.string(),
 	textDescription: z.string(),
-	timestamp: z.string().transform(ts => moment(ts)),
+	timestamp: z.string().transform((ts) => moment(ts)),
 	presentWeather: z.array(MetarPhenomenon),
 
 	elevation: QuantitativeValue,
@@ -261,7 +261,7 @@ export const Observation = z.object({
 	precipitationLast6Hours: QuantitativeValue,
 	relativeHumidity: QuantitativeValue,
 	windChill: QuantitativeValue,
-	heatIndex: QuantitativeValue,
+	heatIndex: QuantitativeValue
 });
 
 export const ObservationGeoJson = z.object({
@@ -269,6 +269,35 @@ export const ObservationGeoJson = z.object({
 });
 
 export type ObservationGeoJson = z.infer<typeof ObservationGeoJson>;
+
+export const ObservationCollectionGeoJson = z.object({
+	features: z.array(ObservationGeoJson)
+});
+
+export const quantitativeValues = [
+	['temperature', 'Temperature'],
+	['maxTemperatureLast24Hours', 'Max Temperature (Last 24 Hours)'],
+	['minTemperatureLast24Hours', 'Min Temperature (Last 24 Hours)'],
+	['windChill', 'Wind Chill'],
+	['heatIndex', 'Head Index'],
+	['relativeHumidity', 'Relative Humidity'],
+
+	['dewpoint', 'Dewpoint'],
+	['barometricPressure', 'Barometric Pressure'],
+	['seaLevelPressure', 'Sea Level Pressure'],
+	['precipitationLastHour', 'Precipitation (Last Hour)'],
+	['precipitationLast3Hours', 'Precipitation (Last 3 Hours)'],
+	['precipitationLast6Hours', 'Precipitation (Last 6 Hours)'],
+
+	['windDirection', 'Wind Direction'],
+	['windSpeed', 'Wind Speed'],
+	['windGust', 'Wind Gust'],
+
+	['visibility', 'Visibility'],
+	['elevation', 'Elevation']
+];
+
+export type ObservationCollectionGeoJson = z.infer<typeof ObservationCollectionGeoJson>;
 
 export interface WeatherData {
 	observation: ObservationGeoJson;

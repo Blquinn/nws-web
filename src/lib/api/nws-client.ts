@@ -3,8 +3,11 @@ import {
 	GridpointStationFeature,
 	NwsGridpointResponse,
 	NwsPointResponse,
+	ObservationCollectionGeoJson,
 	ObservationGeoJson,
 	ObservationStationCollectionResponse,
+	QuantitativeValue,
+	quantitativeValues,
 	type WeatherData
 } from './models';
 import moment from 'dayjs';
@@ -12,24 +15,15 @@ import moment from 'dayjs';
 const nwsBaseUrl = 'http://api.weather.gov';
 const requestTimeout = moment.duration({ minutes: 1 });
 
-// async function doFetch(uri: string, headers: Record<string, string>) {
-//   const res = await fetch(uri, { headers });
-//   if (!res.ok) {
-//     throw `Failed to make request, response code: ${res.status}`;
-//   }
-
-//   // const json = await res.json();
-// }
-
 async function getNwsPoint(coord: Coordinate): Promise<NwsPointResponse> {
-	var res = await fetch(`${nwsBaseUrl}/points/${coord.lat},${coord.lon}`, {
+	const res = await fetch(`${nwsBaseUrl}/points/${coord.lat},${coord.lon}`, {
 		signal: AbortSignal.timeout(requestTimeout.asMilliseconds())
 	});
 	if (!res.ok) {
 		throw `Got bad response from NWS ${res.status}`;
 	}
 
-	var body = await res.json();
+	const body = await res.json();
 	return NwsPointResponse.parse(body);
 }
 
@@ -40,7 +34,7 @@ async function getGridpointStations(
 ): Promise<ObservationStationCollectionResponse> {
 	const limit = 100;
 
-	var res = await fetch(
+	const res = await fetch(
 		`${nwsBaseUrl}/gridpoints/${officeCode}/${gridX},${gridY}/stations?limit=${limit}`,
 		{ signal: AbortSignal.timeout(requestTimeout.asMilliseconds()) }
 	);
@@ -57,7 +51,7 @@ async function getGridpoint(
 	gridX: number,
 	gridY: number
 ): Promise<NwsGridpointResponse> {
-	var res = await fetch(`${nwsBaseUrl}/gridpoints/${officeCode}/${gridX},${gridY}`, {
+	const res = await fetch(`${nwsBaseUrl}/gridpoints/${officeCode}/${gridX},${gridY}`, {
 		signal: AbortSignal.timeout(requestTimeout.asMilliseconds())
 	});
 
@@ -69,7 +63,7 @@ async function getGridpoint(
 }
 
 async function getStationObservationLatest(stationId: string): Promise<ObservationGeoJson> {
-	var res = await fetch(`${nwsBaseUrl}/stations/${stationId}/observations/latest`, {
+	const res = await fetch(`${nwsBaseUrl}/stations/${stationId}/observations/latest`, {
 		signal: AbortSignal.timeout(requestTimeout.asMilliseconds())
 	});
 
@@ -80,12 +74,40 @@ async function getStationObservationLatest(stationId: string): Promise<Observati
 	return ObservationGeoJson.parse(await res.json());
 }
 
+async function getStationObservations(
+	stationId: string,
+	{ start, end, limit }: { start?: string; end?: string; limit?: number }
+): Promise<ObservationCollectionGeoJson> {
+	const params = new URLSearchParams();
+	if (start) {
+		params.append('start', start);
+	}
+
+	if (end) {
+		params.append('end', end);
+	}
+
+	if (limit) {
+		params.append('limit', limit.toString());
+	}
+
+	const res = await fetch(`${nwsBaseUrl}/stations/${stationId}/observations?${params}`, {
+		signal: AbortSignal.timeout(requestTimeout.asMilliseconds())
+	});
+
+	if (!res.ok) {
+		throw `Got bad response from NWS ${res.status}`;
+	}
+
+	return ObservationCollectionGeoJson.parse(await res.json());
+}
+
 export async function getWeatherForLocation(coord: Coordinate): Promise<WeatherData> {
-	var res = (await getNwsPoint(coord)).properties;
+	const res = (await getNwsPoint(coord)).properties;
 
-	var gridpointResponse = await getGridpoint(res.gridId, res.gridX, res.gridY);
+	const gridpointResponse = await getGridpoint(res.gridId, res.gridX, res.gridY);
 
-	var gridpointStations = await getGridpointStations(res.gridId, res.gridX, res.gridY);
+	const gridpointStations = await getGridpointStations(res.gridId, res.gridX, res.gridY);
 
 	const featuresByDistance: [number, GridpointStationFeature][] = gridpointStations.features.map(
 		(f) => {
@@ -95,13 +117,33 @@ export async function getWeatherForLocation(coord: Coordinate): Promise<WeatherD
 		}
 	);
 
-	// featuresByDistance.sort((a, b) => a[0] - b[0]);
 	featuresByDistance.sort((a, b) => b[0] - a[0]);
 
 	const closestFeature = featuresByDistance[0][1];
 	const stationId = closestFeature.properties.stationIdentifier;
 
-	var observation = await getStationObservationLatest(stationId);
+	const end = moment().endOf('hour')
+	const start = end.subtract(4, 'hours');
+
+	const observations = await getStationObservations(stationId, {
+		start: start.utc().format(),
+		end: end.utc().format(),
+		limit: 10,
+	});
+
+	// Merge 3 hrs of observations
+	// TODO: Note in the UI if value is old.
+	const observation = observations.features[0];
+	for (let i = 1; i < observations.features.length; i++) {
+		for (let [v, _] of quantitativeValues) {
+			const prop = (observation.properties as any)[v] as QuantitativeValue;
+			const obsProp = (observations.features[i].properties as any)[v] as QuantitativeValue;
+
+			if (!prop.value && obsProp) {
+				((observation.properties as any)[v] as QuantitativeValue) = obsProp;
+			}
+		}
+	}
 
 	return {
 		observation: observation,

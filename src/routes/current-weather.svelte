@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { QuantitativeValue, WeatherData } from '@/api/models';
+	import { quantitativeValues, type QuantitativeValue, type WeatherData } from '@/api/models';
 	import {
 		convertToUnit,
 		displayUnit,
@@ -14,30 +14,6 @@
 	}: {
 		data: WeatherData;
 	} = $props();
-
-	const quantitativeValues = [
-		['temperature', 'Temperature'],
-		['maxTemperatureLast24Hours', 'Max Temperature (Last 24 Hours)'],
-		['minTemperatureLast24Hours', 'Min Temperature (Last 24 Hours)'],
-		['windChill', 'Wind Chill'],
-		['heatIndex', 'Head Index'],
-		['relativeHumidity', 'Relative Humidity'],
-
-		['dewpoint', 'Dewpoint'],
-		['barometricPressure', 'Barometric Pressure'],
-		['seaLevelPressure', 'Sea Level Pressure'],
-		['precipitationLastHour', 'Precipitation (Last Hour)'],
-		['precipitationLast3Hours', 'Precipitation (Last 3 Hours)'],
-		['precipitationLast6Hours', 'Precipitation (Last 6 Hours)'],
-
-		['windDirection', 'Wind Direction'],
-		['windSpeed', 'Wind Speed'],
-		['windGust', 'Wind Gust'],
-
-		['visibility', 'Visibility'],
-		['elevation', 'Elevation'],
-	];
-
 	function displayQuantitativeValue(
 		val: QuantitativeValue,
 		system: UnitSystem
