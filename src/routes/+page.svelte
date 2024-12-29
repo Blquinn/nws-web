@@ -1,10 +1,7 @@
 <script lang="ts">
-	import LightSwitch from '@/components/ui/light-switch.svelte';
-
 	import { getWeatherForLocation } from '@/api/nws-client';
 	import { PropertyList, type WeatherData } from '@/api/models';
 	import { onMount } from 'svelte';
-	import UnitSwitch from '@/components/ui/unit-switch.svelte';
 	import { chartGroup, initCharts } from '@/chart';
 	import PlistChart from '@/components/plist-chart.svelte';
 	import { connect } from 'echarts/core';
@@ -40,16 +37,6 @@
 		}
 	});
 </script>
-
-<div class="flex flex-row justify-between border-b p-2">
-	<div></div>
-
-	<!-- Right side -->
-	<div class="flex flex-row gap-2">
-		<LightSwitch />
-		<UnitSwitch />
-	</div>
-</div>
 
 {#if weatherResponse.state == 'error'}
 	<div class="flex h-full w-full flex-col items-center justify-center">
