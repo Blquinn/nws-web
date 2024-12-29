@@ -241,6 +241,10 @@ export type MetarPhenomenon = z.infer<typeof MetarPhenomenon>;
 
 export const Observation = z.object({
 	station: z.string(),
+	textDescription: z.string(),
+	timestamp: z.string().transform(ts => moment(ts)),
+	presentWeather: z.array(MetarPhenomenon),
+
 	elevation: QuantitativeValue,
 	temperature: QuantitativeValue,
 	dewpoint: QuantitativeValue,
@@ -258,7 +262,6 @@ export const Observation = z.object({
 	relativeHumidity: QuantitativeValue,
 	windChill: QuantitativeValue,
 	heatIndex: QuantitativeValue,
-	presentWeather: z.array(MetarPhenomenon)
 });
 
 export const ObservationGeoJson = z.object({

@@ -1,8 +1,10 @@
 import moment from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
 import type { PropertyValue, UnitOfMeasure } from "./models";
 
 moment.extend(duration);
+moment.extend(utc);
 
 interface pl {
   uom?: UnitOfMeasure,

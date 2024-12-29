@@ -12,7 +12,9 @@
 	import LoadingSpinner from '@/components/loading-spinner.svelte';
 	import CurrentWeather from './current-weather.svelte';
 	import { Coordinate } from '@/api/geography';
+	import { initUnits } from '@/convert';
 
+	initUnits();
 	initCharts();
 
 	type State =

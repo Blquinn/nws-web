@@ -1,4 +1,4 @@
-import { unit } from 'mathjs';
+import { unit, createUnit } from 'mathjs';
 import type { Unit } from 'mathjs';
 import { unitTypeMap, type WmoUnitType } from './api/units';
 import type { UnitOfMeasure } from './api/models';
@@ -82,10 +82,10 @@ const imperialMap = {
 	cm: 'in',
 	degC: 'degF',
 	// TODO: inches of mercury
-	Pa: 'bar',
-	kPa: 'bar',
-	hPa: 'bar',
-	dPa: 'bar'
+	Pa: 'inHg',
+	kPa: 'inHg',
+	hPa: 'inHg',
+	dPa: 'inHg'
 } as Record<string, string>;
 
 export function displayUnit(convertible: ConvertableUnit, system: UnitSystem): DisplayableUnit {
@@ -123,4 +123,13 @@ export function formatFloat(n: number, decimals: number): string {
 	const rounded = Math.round(n * fact) / fact;
 	const noDec = Math.round(rounded);
 	return (noDec == rounded ? noDec : rounded).toString();
+}
+
+export function initUnits() {
+  try {
+    // Create "inches of mercury unit type" if it doesn't exist
+    unit(1, 'inHg');
+  } catch (e) {
+    createUnit('inHg', '25.4 mmHg');
+  }
 }
