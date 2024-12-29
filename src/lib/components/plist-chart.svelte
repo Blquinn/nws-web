@@ -7,6 +7,7 @@
 	import type { PropertyList } from '@/api/models';
 	import { convertToUnit, displayUnit, type UnitSystem } from '@/convert';
 	import { unitSystemStore } from '@/state';
+	import { chartGroup } from '@/chart';
 
 	type Props = {
 		title: string;
@@ -84,7 +85,7 @@
 			title: [
 				{
 					left: 'center',
-					text: props.title
+					text: `${props.title} (${minUnit.notation})`
 				}
 			],
 			grid: {
@@ -146,5 +147,5 @@
 </script>
 
 <div class="m-4 h-[300px] rounded-lg border bg-card p-4">
-	<Chart options={option} class="h-full w-full" />
+	<Chart options={option} class="h-full w-full" group={chartGroup} />
 </div>

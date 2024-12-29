@@ -24,3 +24,5 @@ export function initCharts() {
 		DataZoomComponent
 	]);
 }
+
+export const chartGroup = "weatherProperty";

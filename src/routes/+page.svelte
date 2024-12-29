@@ -5,26 +5,29 @@
 	import { PropertyList, type WeatherData } from '@/api/models';
 	import { onMount } from 'svelte';
 	import UnitSwitch from '@/components/ui/unit-switch.svelte';
-	import { initCharts } from '@/chart';
+	import { chartGroup, initCharts } from '@/chart';
 	import PlistChart from '@/components/plist-chart.svelte';
+	import { connect } from 'echarts/core'
+	import { camelCaseToTitle } from '@/utils';
 
 	initCharts();
 
 	type resType = WeatherData | string | undefined;
 	let weatherResponse: resType = $state(undefined);
 
+	function propListHasValues(plist?: PropertyList): boolean {
+		return !!plist && !!plist.uom && !!plist.values;
+	}
+
 	onMount(async () => {
 		weatherResponse = 'Loading';
 		try {
 			weatherResponse = await getWeatherForLocation(40.6959883, -73.9953226);
+			connect(chartGroup);
 		} catch (e) {
 			weatherResponse = `Error: ${e}`;
 		}
 	});
-
-	function propListHasValues(plist?: PropertyList): boolean {
-		return !!plist && !!plist.uom && !!plist.values;
-	}
 </script>
 
 <div class="flex flex-row justify-between border-b p-2">
@@ -42,7 +45,7 @@
 {:else if weatherResponse}
 	{#each Object.entries(weatherResponse.gridpointResponse.properties.properties) as prop}
 		{#if propListHasValues(prop[1])}
-			<PlistChart title={prop[0]} propertyList={prop[1]} />
+			<PlistChart title={camelCaseToTitle(prop[0])} propertyList={prop[1]} />
 		{/if}
 	{/each}
 {:else}

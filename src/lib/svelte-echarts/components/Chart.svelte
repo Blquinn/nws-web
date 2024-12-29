@@ -22,6 +22,7 @@
 		silent?: SetOptionOpts['silent'];
 		replaceMerge?: SetOptionOpts['replaceMerge'];
 		transition?: SetOptionOpts['transition'];
+		group?: string;
 
 		chart?: BaseEchartsType | CoreEchartsType;
 	}
@@ -38,6 +39,7 @@
 		silent = false,
 		replaceMerge = undefined,
 		transition = undefined,
+		group,
 		chart = undefined,
 		...restProps
 	}: Props = $props();
@@ -45,6 +47,9 @@
 	$effect(() => {
 		if (chart) {
 			chart.setOption(options, { notMerge, lazyUpdate, silent, replaceMerge, transition });
+			if (group) {
+				chart.group = group;
+			}
 		}
 	});
 
@@ -54,6 +59,9 @@
 		if (chart) chart.dispose();
 
 		chart = init(element, theme, initOptions);
+		if (group) {
+			chart.group = group;
+		}
 
 		EVENT_NAMES.forEach((eventName) => {
 			// @ts-expect-error
