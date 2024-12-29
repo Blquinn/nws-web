@@ -21,8 +21,8 @@ const requestTimeout = moment.duration({ minutes: 1 });
 //   // const json = await res.json();
 // }
 
-async function getNwsPoint(lat: number, lon: number): Promise<NwsPointResponse> {
-	var res = await fetch(`${nwsBaseUrl}/points/${lat},${lon}`, {
+async function getNwsPoint(coord: Coordinate): Promise<NwsPointResponse> {
+	var res = await fetch(`${nwsBaseUrl}/points/${coord.lat},${coord.lon}`, {
 		signal: AbortSignal.timeout(requestTimeout.asMilliseconds())
 	});
 	if (!res.ok) {
@@ -80,24 +80,23 @@ async function getStationObservationLatest(stationId: string): Promise<Observati
 	return ObservationGeoJson.parse(await res.json());
 }
 
-export async function getWeatherForLocation(lat: number, lon: number): Promise<WeatherData> {
-	var res = (await getNwsPoint(lat, lon)).properties;
+export async function getWeatherForLocation(coord: Coordinate): Promise<WeatherData> {
+	var res = (await getNwsPoint(coord)).properties;
 
 	var gridpointResponse = await getGridpoint(res.gridId, res.gridX, res.gridY);
 
 	var gridpointStations = await getGridpointStations(res.gridId, res.gridX, res.gridY);
 
-	var userCoord = new Coordinate(lat, lon);
-
 	const featuresByDistance: [number, GridpointStationFeature][] = gridpointStations.features.map(
 		(f) => {
 			const coord = f.geometry.coordinates;
-			const dist = userCoord.haversineDistanceTo(coord);
+			const dist = coord.haversineDistanceTo(coord);
 			return [dist, f];
 		}
 	);
 
-	featuresByDistance.sort((a, b) => a[0] - b[0]);
+	// featuresByDistance.sort((a, b) => a[0] - b[0]);
+	featuresByDistance.sort((a, b) => b[0] - a[0]);
 
 	const closestFeature = featuresByDistance[0][1];
 	const stationId = closestFeature.properties.stationIdentifier;

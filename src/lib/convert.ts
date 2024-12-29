@@ -20,7 +20,7 @@ export type DisplayableUnitType = {
 export type ConvertableUnit = UnitType | DisplayableUnitType;
 
 const wmoTypeToMathJs = {
-	Cel: 'degC',
+	Cel: 'degC'
 } as Record<WmoUnitType, string>;
 
 export function convertToUnit(value: number, uom?: UnitOfMeasure): ConvertableUnit {
@@ -34,15 +34,15 @@ export function convertToUnit(value: number, uom?: UnitOfMeasure): ConvertableUn
 		};
 	}
 
-  if (uom.unitType == "percent") {
+	if (uom.unitType == 'percent') {
 		return {
 			type: 'displayable',
 			unit: {
-				notation: "%",
+				notation: '%',
 				value: value
 			}
 		};
-  }
+	}
 
 	try {
 		const mappedType = wmoTypeToMathJs[uom.unitType];
@@ -116,4 +116,11 @@ export function displayUnit(convertible: ConvertableUnit, system: UnitSystem): D
 		value: u.toNumber(),
 		notation: u.formatUnits()
 	};
+}
+
+export function formatFloat(n: number, decimals: number): string {
+	const fact = Math.pow(10, decimals);
+	const rounded = Math.round(n * fact) / fact;
+	const noDec = Math.round(rounded);
+	return (noDec == rounded ? noDec : rounded).toString();
 }

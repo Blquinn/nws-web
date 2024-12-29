@@ -10,15 +10,18 @@
 	import { connect } from 'echarts/core';
 	import { camelCaseToTitle } from '@/utils';
 	import LoadingSpinner from '@/components/loading-spinner.svelte';
+	import CurrentWeather from './current-weather.svelte';
+	import { Coordinate } from '@/api/geography';
 
 	initCharts();
 
 	type State =
 		| { state: 'loading' }
-		| { state: 'loaded'; data: WeatherData; }
-		| { state: 'error'; error: string; };
+		| { state: 'loaded'; data: WeatherData }
+		| { state: 'error'; error: string };
 
 	let weatherResponse: State = $state({ state: 'loading' });
+
 
 	function propListHasValues(plist?: PropertyList): boolean {
 		return !!plist && !!plist.uom && !!plist.values;
@@ -27,7 +30,7 @@
 	onMount(async () => {
 		weatherResponse = { state: 'loading' };
 		try {
-			const res = await getWeatherForLocation(40.6959883, -73.9953226);
+			const res = await getWeatherForLocation(new Coordinate(40.6959883, -73.9953226));
 			weatherResponse = { state: 'loaded', data: res };
 			connect(chartGroup);
 		} catch (e) {
@@ -51,6 +54,9 @@
 		<p class="color-destructive-foreground">{weatherResponse.error}</p>
 	</div>
 {:else if weatherResponse.state == 'loaded'}
+	<CurrentWeather data={weatherResponse.data} />
+
+	<h2 class="p-4 text-3xl">Hourly Forecast</h2>
 	{#each Object.entries(weatherResponse.data.gridpointResponse.properties.properties) as prop}
 		{#if propListHasValues(prop[1])}
 			<PlistChart title={camelCaseToTitle(prop[0])} propertyList={prop[1]} />

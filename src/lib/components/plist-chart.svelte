@@ -5,7 +5,7 @@
 	import { applyTheme, darkTheme, lightTheme, type ThemeData } from '@/svelte-echarts/theme';
 	import { mode } from 'mode-watcher';
 	import type { PropertyList } from '@/api/models';
-	import { convertToUnit, displayUnit, type UnitSystem } from '@/convert';
+	import { convertToUnit, displayUnit, formatFloat, type UnitSystem } from '@/convert';
 	import { unitSystemStore } from '@/state';
 	import { chartGroup } from '@/chart';
 
@@ -17,13 +17,6 @@
 	const props: Props = $props();
 
 	let theme = $derived($mode == 'dark' ? darkTheme : lightTheme);
-
-	function formatFloat(n: number, decimals: number): string {
-		const fact = Math.pow(10, decimals);
-		const rounded = Math.round(n * fact) / fact;
-		const noDec = Math.round(rounded);
-		return (noDec == rounded ? noDec : rounded).toString();
-	}
 
 	const weatherDataToOpt = (theme: ThemeData, unitSystem: UnitSystem): EChartsOption => {
 		const plist = props.propertyList!;

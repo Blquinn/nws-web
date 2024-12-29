@@ -44,7 +44,7 @@ function parseTimeRange(json: string): TimeRange {
 
 export const PropertyValue = z.object({
 	validTime: z.string().transform(parseTimeRange),
-	value: z.number().nullable()
+	value: z.number().nullish()
 });
 
 export type PropertyValue = z.infer<typeof PropertyValue>;
@@ -78,7 +78,7 @@ function parseUom(json?: string | null): UnitOfMeasure | undefined {
 
 export const PropertyList = z
 	.object({
-		uom: z.string().optional().nullable().transform(parseUom),
+		uom: z.string().nullish().transform(parseUom),
 		values: z.array(PropertyValue)
 	})
 	.transform((pl) => transformPropertyList(pl));
@@ -86,8 +86,8 @@ export const PropertyList = z
 export type PropertyList = z.infer<typeof PropertyList>;
 
 export const WeatherValue = z.object({
-	coverage: z.string().nullable(),
-	weather: z.string().nullable(),
+	coverage: z.string().nullish(),
+	weather: z.string().nullish(),
 	// intensity: z.any(),
 	// visibility: z.any(),
 	// attributes: z.array(z.any())
@@ -223,17 +223,21 @@ export type ObservationStationCollectionResponse = z.infer<
 // Station Observations
 
 export const QuantitativeValue = z.object({
-	value: z.number().nullable(),
+	value: z.number().nullish(),
 	// TODO: Convert units
-	unitCode: z.string().optional()
+	unitCode: z.string().nullish().transform(parseUom)
 });
 
+export type QuantitativeValue = z.infer<typeof QuantitativeValue>;
+
 export const MetarPhenomenon = z.object({
-	intensity: z.string().nullable(),
-	modifier: z.string().nullable(),
+	intensity: z.string().nullish(),
+	modifier: z.string().nullish(),
 	weather: z.string(),
 	rawString: z.string()
 });
+
+export type MetarPhenomenon = z.infer<typeof MetarPhenomenon>;
 
 export const Observation = z.object({
 	station: z.string(),
