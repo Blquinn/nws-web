@@ -21,7 +21,6 @@
 
 	let weatherResponse: State = $state({ state: 'loading' });
 
-
 	function propListHasValues(plist?: PropertyList): boolean {
 		return !!plist && !!plist.uom && !!plist.values;
 	}

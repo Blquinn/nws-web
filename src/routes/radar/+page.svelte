@@ -6,6 +6,8 @@
 	import { use, registerMap } from 'echarts/core';
 
   import world from './world.json';
+	import { applyTheme, themeData } from '@/svelte-echarts/theme';
+	import { registerLeafletExtension } from '@/svelte-echarts/leaflet/leaflet';
 
 	initCharts();
 
@@ -13,20 +15,22 @@
     GeoComponent,
   ])
 
+	registerLeafletExtension();
+
   registerMap('world', JSON.stringify(world));
 
-	let opts: EChartsOption = {
+	let opts: EChartsOption = $derived(applyTheme({
 		progressive: 20000,
 		backgroundColor: '#111',
 		geo: {
 			center: [-74.04327099998152, 40.86737600240287],
-			zoom: 360,
+			zoom: 30,
 			map: 'world',
 			roam: true,
 			silent: true,
 			itemStyle: {
-				color: 'transparent',
-				borderColor: 'rgba(255,255,255,0.1)',
+        color: $themeData.background,
+        borderColor: $themeData.foreground,
 				borderWidth: 1,
 			}
 		},
@@ -46,7 +50,7 @@
 			//   }
 			// }
 		]
-	};
+	}, $themeData));
 </script>
 
 <div class="h-[800px]">

@@ -1,4 +1,6 @@
 import type { EChartsOption } from 'echarts';
+import { mode } from 'mode-watcher';
+import { derived } from 'svelte/store';
 
 // These need to be synced with css color vars from app.css
 export interface ThemeData {
@@ -128,3 +130,5 @@ export function applyTheme(options: EChartsOption, theme: ThemeData): EChartsOpt
     }, options.tooltip),
   }
 }
+
+export const themeData = derived(mode, ($mode) => $mode == "dark" ? darkTheme : lightTheme);

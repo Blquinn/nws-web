@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LightSwitch from '@/components/ui/light-switch.svelte';
 
-
 	import '../app.css';
 	import { ModeWatcher } from "mode-watcher";
 	import UnitSwitch from '@/components/ui/unit-switch.svelte';
