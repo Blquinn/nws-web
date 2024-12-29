@@ -131,7 +131,6 @@ export async function getWeatherForLocation(coord: Coordinate): Promise<WeatherD
 		limit: 10,
 	});
 
-	// Merge 3 hrs of observations
 	// TODO: Note in the UI if value is old.
 	const observation = observations.features[0];
 	for (let i = 1; i < observations.features.length; i++) {
