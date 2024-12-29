@@ -7,65 +7,113 @@ const feetInMile = 5280;
 
 export type UnitSystem = 'metric' | 'imperial';
 
+export type UnitType = {
+	type: 'unit';
+	unit: Unit;
+};
+
+export type DisplayableUnitType = {
+	type: 'displayable';
+	unit: DisplayableUnit;
+};
+
+export type ConvertableUnit = UnitType | DisplayableUnitType;
+
 const wmoTypeToMathJs = {
-  "Cel": "degC",
+	Cel: 'degC',
 } as Record<WmoUnitType, string>;
 
-export function convertToUnit(value: number, uom: UnitOfMeasure): Unit {
-  try {
-    const mappedType = wmoTypeToMathJs[uom.unitType];
-    if (mappedType) {
-      return unit(value, mappedType);
-    }
+export function convertToUnit(value: number, uom?: UnitOfMeasure): ConvertableUnit {
+	if (!uom) {
+		return {
+			type: 'displayable',
+			unit: {
+				notation: 'unknown',
+				value: value
+			}
+		};
+	}
 
-    const unitDef = unitTypeMap[uom.unitType]
-    return unit(value, unitDef.notation);
-  } catch (e) {
-    return unit(value, 'unknown');
+  if (uom.unitType == "percent") {
+		return {
+			type: 'displayable',
+			unit: {
+				notation: "%",
+				value: value
+			}
+		};
   }
+
+	try {
+		const mappedType = wmoTypeToMathJs[uom.unitType];
+		if (mappedType) {
+			return {
+				type: 'unit',
+				unit: unit(value, mappedType)
+			};
+		}
+
+		const unitDef = unitTypeMap[uom.unitType];
+		return {
+			type: 'unit',
+			unit: unit(value, unitDef.notation)
+		};
+	} catch (e) {
+		return {
+			type: 'displayable',
+			unit: {
+				notation: uom.unitType,
+				value: value
+			}
+		};
+	}
 }
 
 export interface DisplayableUnit {
-  value: number
-  notation: string
+	value: number;
+	notation: string;
 }
 
-
 const imperialMap = {
-  "km/h": "mi/h",
-  "m/s": "ft/s",
-  "m": "ft",
-  "mm": "in",
-  "cm": "in",
-  "degC": "degF",
-  // TODO: inches of mercury
-  "Pa": "bar",
-  "kPa": "bar",
-  "hPa": "bar",
-  "dPa": "bar",
-} as Record<string, string>
+	'km/h': 'mi/h',
+	'm/s': 'ft/s',
+	m: 'ft',
+	mm: 'in',
+	cm: 'in',
+	degC: 'degF',
+	// TODO: inches of mercury
+	Pa: 'bar',
+	kPa: 'bar',
+	hPa: 'bar',
+	dPa: 'bar'
+} as Record<string, string>;
 
-export function displayUnit(u: Unit, system: UnitSystem): DisplayableUnit {
+export function displayUnit(convertible: ConvertableUnit, system: UnitSystem): DisplayableUnit {
+	if (convertible.type == 'displayable') {
+		return convertible.unit;
+	}
 
-  const unitType = u.formatUnits().replaceAll(" ", "");
+	const u = convertible.unit;
 
-  if (system == "imperial") {
-    const mapping = imperialMap[unitType];
-    if (!mapping) {
-      return {
-        value: u.toNumber(),
-        notation: u.formatUnits(),
-      }
-    }
+	const unitType = u.formatUnits().replaceAll(' ', '');
 
-    return {
-      value: u.toNumber(mapping),
-      notation: mapping,
-    }
-  }
+	if (system == 'imperial') {
+		const mapping = imperialMap[unitType];
+		if (!mapping) {
+			return {
+				value: u.toNumber(),
+				notation: u.formatUnits()
+			};
+		}
 
-  return {
-    value: u.toNumber(),
-    notation: u.formatUnits(),
-  }
+		return {
+			value: u.toNumber(mapping),
+			notation: mapping
+		};
+	}
+
+	return {
+		value: u.toNumber(),
+		notation: u.formatUnits()
+	};
 }
