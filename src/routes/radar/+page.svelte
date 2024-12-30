@@ -1,55 +1,41 @@
 <script lang="ts">
-	import { initCharts } from '@/chart';
-	import Chart from '@/svelte-echarts/components/Chart.svelte';
-	import type { EChartsOption } from 'echarts';
-	import { GeoComponent } from 'echarts/components';
-	import { use, registerMap } from 'echarts/core';
+	import * as L from 'leaflet';
+	import { onMount } from 'svelte';
 
-  import world from './world.json';
-	import { applyTheme, themeData } from '@/svelte-echarts/theme';
+	import 'leaflet/dist/leaflet.css';
 
-	initCharts();
+	import nyc from './nyc.json';
 
-  use([
-    GeoComponent,
-  ])
+	let chartEl: HTMLDivElement;
+	let map: L.Map;
 
-  registerMap('world', JSON.stringify(world));
+	onMount(() => {
+		map = L.map(chartEl, {
+			center: [40.6959883, -73.9953226],
+			zoom: 13
+		});
 
-	let opts: EChartsOption = $derived(applyTheme({
-		progressive: 20000,
-		backgroundColor: '#111',
-		geo: {
-			center: [-74.04327099998152, 40.86737600240287],
-			zoom: 30,
-			map: 'world',
-			roam: true,
-			silent: true,
-			itemStyle: {
-        color: $themeData.background,
-        borderColor: $themeData.foreground,
-				borderWidth: 1,
-			}
-		},
-		series: [
-			// {
-			//   type: 'lines',
-			//   coordinateSystem: 'geo',
-			//   blendMode: 'lighter',
-			//   dimensions: ['value'],
-			//   data: new Float64Array(),
-			//   polyline: true,
-			//   large: true,
-			//   lineStyle: {
-			//     color: 'orange',
-			//     width: 0.5,
-			//     opacity: 0.3
-			//   }
-			// }
-		]
-	}, $themeData));
+		const labelsPane = map.createPane('labels');
+		labelsPane.style.zIndex = '650';
+		labelsPane.style.pointerEvents = 'none';
+
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+			attribution: '©OpenStreetMap, ©CartoDB'
+		}).addTo(map);
+
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+			attribution: '©OpenStreetMap, ©CartoDB',
+			pane: 'labels'
+		}).addTo(map);
+
+		L.control.scale().addTo(map);
+
+		L.geoJson(nyc as any, {}).addTo(map);
+
+		return () => {
+			map.remove();
+		};
+	});
 </script>
 
-<div class="h-[800px]">
-	<Chart class="h-full w-full" options={opts} />
-</div>
+<div bind:this={chartEl} class="h-[800px] w-full"></div>
