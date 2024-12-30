@@ -7,15 +7,12 @@
 
   import world from './world.json';
 	import { applyTheme, themeData } from '@/svelte-echarts/theme';
-	import { registerLeafletExtension } from '@/svelte-echarts/leaflet/leaflet';
 
 	initCharts();
 
   use([
     GeoComponent,
   ])
-
-	registerLeafletExtension();
 
   registerMap('world', JSON.stringify(world));
 
