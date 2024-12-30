@@ -115,9 +115,9 @@ function mergeArrayOrObj<T>(themeObj: Partial<T>, configObjs?: T | T[]): T | T[]
 
 export function applyTheme(options: EChartsOption, theme: ThemeData): EChartsOption {
   return {
-    ...options,
     backgroundColor: theme.background,
     color: theme.foreground,
+    ...options,
     textStyle: mergeObject({ color: theme.foreground }, options.textStyle),
     grid: mergeArrayOrObj({ backgroundColor: theme.background }, options.grid),
     title: mergeArrayOrObj({ textStyle: { color: theme.foreground } }, options.title),
