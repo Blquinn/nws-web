@@ -12,7 +12,7 @@ import {
 } from './models';
 import moment from 'dayjs';
 
-const nwsBaseUrl = 'http://api.weather.gov';
+const nwsBaseUrl = 'https://api.weather.gov';
 const requestTimeout = moment.duration({ minutes: 1 });
 
 async function getNwsPoint(coord: Coordinate): Promise<NwsPointResponse> {

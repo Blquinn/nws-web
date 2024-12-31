@@ -10,18 +10,22 @@
 
 <ModeWatcher />
 
-<!-- Header -->
-<div class="flex flex-row justify-between border-b p-2">
-	<div class="flex flex-row px-2 gap-4 items-center">
-		<a href="/">Home</a>
-		<a href="/radar">Radar</a>
+<div class="h-full flex flex-col">
+	<!-- Header -->
+	<div class="flex flex-row justify-between border-b p-2">
+		<div class="flex flex-row px-2 gap-4 items-center">
+			<a href="/">Home</a>
+			<a href="/radar">Radar</a>
+		</div>
+
+		<!-- Right side -->
+		<div class="flex flex-row gap-2">
+			<LightSwitch />
+			<UnitSwitch />
+		</div>
 	</div>
 
-	<!-- Right side -->
-	<div class="flex flex-row gap-2">
-		<LightSwitch />
-		<UnitSwitch />
+	<div class="flex-1">
+		{@render children()}
 	</div>
 </div>
-
-{@render children()}
